@@ -76,6 +76,8 @@ class aionProfile
 	
 	public function userData( $print = false )
 	{
+		preg_match( '/<h2>Stats<\/h2><ul class="status"><li class="hp"><span>HP<\/span><strong>([0-9 \+\(\)]{1,})<\/strong><\/li><li class="mp"><span>MP<\/span><strong>([0-9 \+\(\)]{1,})<\/strong><\/li>/si', $this->raw, $data7 );
+		
 		preg_match( '/<span class="name"><span>Lv.<\/span> <em>([a-zA-Z0-9:\/_.?-]{1,})<\/em> ([a-zA-Z0-9:\/_.?-]{1,})<\/span>/si', $this->raw, $data1 );
 		
 		preg_match('/<\/span><p class="info"><span>([a-zA-Z0-9:\/_.?-]{1,})<\/span> \| <span>([a-zA-Z0-9:\/_.?-]{1,})<\/span> \| <span>([a-zA-Z0-9:\/_.?-]{1,})<\/span><\/p>/si', $this->raw, $data2 );
@@ -90,8 +92,16 @@ class aionProfile
 			preg_match('/<strong class="title"><a href="#" onclick=\'goBookUrl\("http:\/\/powerwiki.na.aiononline.com\/aion\/(.*)"\); return false;\'>(.*)<\/a><\/strong>/si', $this->raw, $data6 );
 		else
 			preg_match('/<strong class="title"><a href="#" onclick=\'goBookUrl\("http:\/\/powerwiki.uk.aiononline.com\/aion\/(.*)"\); return false;\'>(.*)<\/a><\/strong>/si', $this->raw, $data6 );
-			
 		
+		// =============================================================================
+		// The below splits the the two values using the seperator "+" to two variables.
+		// =============================================================================
+		$data7[1] = preg_replace("/[^0-9+]/", "", $data7[1]);
+		list($data7[1], $data7[15]) = explode("+", $data7[1]);
+		
+		$data7[2] =  preg_replace("/[^0-9+]/", "", $data7[2]);
+		list($data7[2], $data7[16]) = explode("+", $data7[2]);
+
 		$results = array(
 						"name"			=> $data1[2],	// Player's name
 						"level"			=> $data1[1],	// Player's level
@@ -106,7 +116,11 @@ class aionProfile
 						"total_rank"	=> $data4[4],	// Player's highest abyss rank
 						"total_kills"	=> $data4[5],	// Player's kills
 						"clan"			=> $data5[2],	// Player's clan
-						"clan_url"		=> $data5[1]	// Link to player's clan
+						"clan_url"		=> $data5[1],	// Link to player's clan
+						"hp"				=> $data7[1], // Player's HP
+						"added_hp"  	=> $data7[15], // Player's Added HP
+						"mp"        => $data7[2],     // Player's MP
+						"added_mp"    => $data7[16], // Player's Added MP
 						);
 		
 		if ( $print )
